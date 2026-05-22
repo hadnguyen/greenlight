@@ -1,0 +1,16 @@
+# Binaries and build output
+/tmp/
+/tmp/main.exe
+*.exe
+*.out
+
+# Dependency directories
+/vendor/
+/bin/
+/obj/
+
+# Air/reload tool files
+.air.toml
+
+# Environment files
+.env

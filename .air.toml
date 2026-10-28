@@ -2,11 +2,11 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-cmd = "go build -o ./tmp/api ./cmd/api"
+cmd = "go run github.com/swaggo/swag/cmd/swag@v1.16.6 init -g cmd/api/main.go --parseInternal && go build -o ./tmp/api ./cmd/api"
 entrypoint = ["./tmp/api"]
 
 include_ext = ["go"]
-exclude_dir = ["tmp", ".git", "vendor"]
+exclude_dir = ["tmp", ".git", "vendor", "docs"]
 exclude_regex = ["_test\\.go"]
 exclude_unchanged = true
 

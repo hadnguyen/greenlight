@@ -35,6 +35,10 @@ type application struct {
 	models data.Models
 }
 
+// @title Greenlight API
+// @version 1.0
+// @description API for managing movies.
+// @BasePath /v1
 func main() {
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 

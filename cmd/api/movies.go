@@ -9,6 +9,29 @@ import (
 	"github.com/hadnguyen/greenlight/internal/validator"
 )
 
+type movieCreateInput struct {
+	Title   string       `json:"title" binding:"required" example:"The Breakfast Club"`
+	Year    int32        `json:"year" binding:"required" example:"1985"`
+	Runtime data.Runtime `json:"runtime" binding:"required" swaggertype:"string" example:"97 mins"`
+	Genres  []string     `json:"genres" binding:"required" example:"comedy,drama"`
+}
+
+type movieUpdateInput struct {
+	Title   *string       `json:"title" example:"The Breakfast Club"`
+	Year    *int32        `json:"year" example:"1985"`
+	Runtime *data.Runtime `json:"runtime" swaggertype:"string" example:"97 mins"`
+	Genres  []string      `json:"genres" example:"comedy,drama"`
+}
+
+// listMoviesHandler godoc
+// @Summary List movies
+// @Tags Movies
+// @Produce json
+// @Description Returns all movies ordered by ID. Filtering, pagination and sorting are not yet applied by the database query.
+// @Success 200 {object} object{movies=[]data.Movie}
+// @Failure 422 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /movies [get]
 func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Title  string
@@ -44,13 +67,19 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// createMovieHandler godoc
+// @Summary Create a movie
+// @Tags Movies
+// @Produce json
+// @Accept json
+// @Param movie body movieCreateInput true "Movie details"
+// @Failure 400 {object} map[string]interface{}
+// @Failure 422 {object} map[string]interface{}
+// @Success 201 {object} object{movie=data.Movie}
+// @Failure 500 {object} map[string]interface{}
+// @Router /movies [post]
 func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
-	var input struct {
-		Title   string       `json:"title"`
-		Year    int32        `json:"year"`
-		Runtime data.Runtime `json:"runtime"`
-		Genres  []string     `json:"genres"`
-	}
+	var input movieCreateInput
 
 	err := app.readJSON(w, r, &input)
 	if err != nil {
@@ -88,6 +117,15 @@ func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// showMovieHandler godoc
+// @Summary Get a movie
+// @Tags Movies
+// @Produce json
+// @Param id path int true "Movie ID" minimum(1)
+// @Failure 404 {object} map[string]interface{}
+// @Success 200 {object} object{movie=data.Movie}
+// @Failure 500 {object} map[string]interface{}
+// @Router /movies/{id} [get]
 func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
@@ -111,6 +149,21 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
+// updateMovieHandler godoc
+// @Summary Update a movie
+// @Tags Movies
+// @Produce json
+// @Param id path int true "Movie ID" minimum(1)
+// @Failure 404 {object} map[string]interface{}
+// @Accept json
+// @Param movie body movieUpdateInput true "Movie details"
+// @Failure 400 {object} map[string]interface{}
+// @Failure 422 {object} map[string]interface{}
+// @Description Only provided fields are updated.
+// @Failure 409 {object} map[string]interface{}
+// @Success 200 {object} object{movie=data.Movie}
+// @Failure 500 {object} map[string]interface{}
+// @Router /movies/{id} [patch]
 func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {
@@ -129,12 +182,7 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var input struct {
-		Title   *string       `json:"title"`
-		Year    *int32        `json:"year"`
-		Runtime *data.Runtime `json:"runtime"`
-		Genres  []string      `json:"genres"`
-	}
+	var input movieUpdateInput
 
 	err = app.readJSON(w, r, &input)
 	if err != nil {
@@ -182,6 +230,15 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// deleteMovieHandler godoc
+// @Summary Delete a movie
+// @Tags Movies
+// @Produce json
+// @Param id path int true "Movie ID" minimum(1)
+// @Failure 404 {object} map[string]interface{}
+// @Success 200 {object} object{message=string}
+// @Failure 500 {object} map[string]interface{}
+// @Router /movies/{id} [delete]
 func (app *application) deleteMovieHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {

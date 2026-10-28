@@ -1,0 +1,268 @@
+basePath: /v1
+definitions:
+  data.Movie:
+    properties:
+      genres:
+        items:
+          type: string
+        type: array
+      id:
+        type: integer
+      runtime:
+        example: 120 mins
+        type: string
+      title:
+        type: string
+      version:
+        type: integer
+      year:
+        type: integer
+    type: object
+  main.movieCreateInput:
+    properties:
+      genres:
+        example:
+        - comedy
+        - drama
+        items:
+          type: string
+        type: array
+      runtime:
+        example: 97 mins
+        type: string
+      title:
+        example: The Breakfast Club
+        type: string
+      year:
+        example: 1985
+        type: integer
+    required:
+    - genres
+    - runtime
+    - title
+    - year
+    type: object
+  main.movieUpdateInput:
+    properties:
+      genres:
+        example:
+        - comedy
+        - drama
+        items:
+          type: string
+        type: array
+      runtime:
+        example: 97 mins
+        type: string
+      title:
+        example: The Breakfast Club
+        type: string
+      year:
+        example: 1985
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: API for managing movies.
+  title: Greenlight API
+  version: "1.0"
+paths:
+  /healthcheck:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Check API health
+      tags:
+      - System
+  /movies:
+    get:
+      description: Returns all movies ordered by ID. Filtering, pagination and sorting
+        are not yet applied by the database query.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              movies:
+                items:
+                  $ref: '#/definitions/data.Movie'
+                type: array
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List movies
+      tags:
+      - Movies
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Movie details
+        in: body
+        name: movie
+        required: true
+        schema:
+          $ref: '#/definitions/main.movieCreateInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              movie:
+                $ref: '#/definitions/data.Movie'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a movie
+      tags:
+      - Movies
+  /movies/{id}:
+    delete:
+      parameters:
+      - description: Movie ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              message:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a movie
+      tags:
+      - Movies
+    get:
+      parameters:
+      - description: Movie ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              movie:
+                $ref: '#/definitions/data.Movie'
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get a movie
+      tags:
+      - Movies
+    patch:
+      consumes:
+      - application/json
+      description: Only provided fields are updated.
+      parameters:
+      - description: Movie ID
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      - description: Movie details
+        in: body
+        name: movie
+        required: true
+        schema:
+          $ref: '#/definitions/main.movieUpdateInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            properties:
+              movie:
+                $ref: '#/definitions/data.Movie'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties: true
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update a movie
+      tags:
+      - Movies
+swagger: "2.0"

@@ -55,6 +55,18 @@ After completing the database setup above, run this from the project root instea
 air
 ```
 
+## API documentation
+
+With the API running, open http://localhost:4000/swagger/index.html to browse and try the endpoints.
+
+Air automatically regenerates the documentation before each build when a watched Go file changes. When running without Air, regenerate the documentation manually from the project root after changing API annotations:
+
+```sh
+go run github.com/swaggo/swag/cmd/swag@v1.16.6 init -g cmd/api/main.go --parseInternal
+```
+
+Keep the generated files in `docs/` alongside the code changes. Air excludes `docs/` from file watching to prevent reload loops.
+
 ## Stop the project
 
 Stop the API with `Ctrl+C`, then stop the database:

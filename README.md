@@ -20,12 +20,7 @@ Requirements: Go 1.24.2 or later and Docker Compose. Run the commands below from
    docker compose exec postgres pg_isready -U admin -d greenlight
    ```
 
-3. Create the table and constraints (run only once for a new database):
-
-   ```sh
-   docker compose exec -T postgres psql -v ON_ERROR_STOP=1 -U admin -d greenlight < migrations/000001_create_movies_table.up.sql
-   docker compose exec -T postgres psql -v ON_ERROR_STOP=1 -U admin -d greenlight < migrations/000002_add_movies_check_constraints.up.sql
-   ```
+3. Apply the database migrations using the [migration instructions](#database-migrations) below.
 
 4. Download dependencies and run the API:
 
@@ -39,6 +34,39 @@ Requirements: Go 1.24.2 or later and Docker Compose. Run the commands below from
    ```sh
    curl http://localhost:4000/v1/healthcheck
    ```
+
+## Database migrations
+
+Run these commands from the project root with PostgreSQL running. Replace `<DATABASE_DSN>` with your PostgreSQL connection string (the `GREENLIGHT_DB_DSN` value in `.env`).
+
+```sh
+# Install the CLI (macOS)
+brew install golang-migrate
+
+# Create a new pair of .up.sql and .down.sql files
+# Replace add_example_column with a descriptive migration name
+migrate create -seq -ext=.sql -dir=./migrations add_example_column
+
+# Apply all pending migrations
+migrate -path=./migrations -database='<DATABASE_DSN>' up
+
+# Check the current migration version
+migrate -path=./migrations -database='<DATABASE_DSN>' version
+
+# Roll back the latest migration
+migrate -path=./migrations -database='<DATABASE_DSN>' down 1
+
+# Move to a specific version (example: version 1)
+migrate -path=./migrations -database='<DATABASE_DSN>' goto 1
+```
+
+Fill in the generated SQL files before running `up`. Rollbacks may delete data.
+
+For a dirty migration, repair the schema first, then set the matching version (this does not run SQL):
+
+```sh
+migrate -path=./migrations -database='<DATABASE_DSN>' force 1
+```
 
 ## Run with live reload
 

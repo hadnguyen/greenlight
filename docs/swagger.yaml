@@ -82,8 +82,47 @@ paths:
       - System
   /movies:
     get:
-      description: Returns all movies ordered by ID. Filtering, pagination and sorting
-        are not yet applied by the database query.
+      description: Returns a list of movies.
+      parameters:
+      - description: Title filter
+        in: query
+        name: title
+        type: string
+      - collectionFormat: csv
+        description: Genre filters
+        in: query
+        items:
+          type: string
+        name: genres
+        type: array
+      - default: 1
+        description: Page number
+        in: query
+        maximum: 10000000
+        minimum: 1
+        name: page
+        type: integer
+      - default: 20
+        description: Page size
+        in: query
+        maximum: 100
+        minimum: 1
+        name: page_size
+        type: integer
+      - default: id
+        description: Sort order
+        enum:
+        - id
+        - title
+        - year
+        - runtime
+        - -id
+        - -title
+        - -year
+        - -runtime
+        in: query
+        name: sort
+        type: string
       produces:
       - application/json
       responses:

@@ -27,7 +27,12 @@ type movieUpdateInput struct {
 // @Summary List movies
 // @Tags Movies
 // @Produce json
-// @Description Returns all movies ordered by ID. Filtering, pagination and sorting are not yet applied by the database query.
+// @Description Returns a list of movies.
+// @Param title query string false "Title filter"
+// @Param genres query []string false "Genre filters" collectionFormat(csv)
+// @Param page query int false "Page number" default(1) minimum(1) maximum(10000000)
+// @Param page_size query int false "Page size" default(20) minimum(1) maximum(100)
+// @Param sort query string false "Sort order" default(id) Enums(id, title, year, runtime, -id, -title, -year, -runtime)
 // @Success 200 {object} object{movies=[]data.Movie}
 // @Failure 422 {object} map[string]interface{}
 // @Failure 500 {object} map[string]interface{}
@@ -55,13 +60,21 @@ func (app *application) listMoviesHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	movies, err := app.models.Movies.GetAll(input.Title, input.Genres, input.Filters)
+	movies, metadata, err := app.models.Movies.GetAll(input.Title, input.Genres, input.Filters)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 
-	err = app.writeJSON(w, http.StatusOK, envelope{"movies": movies}, nil)
+	response := struct {
+		Movies   []*data.Movie `json:"movies"`
+		Metadata data.Metadata `json:"metadata"`
+	}{
+		Movies:   movies,
+		Metadata: metadata,
+	}
+
+	err = app.writeJSON(w, http.StatusOK, response, nil)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 	}

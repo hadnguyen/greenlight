@@ -37,7 +37,7 @@ const docTemplate = `{
         },
         "/movies": {
             "get": {
-                "description": "Returns all movies ordered by ID. Filtering, pagination and sorting are not yet applied by the database query.",
+                "description": "Returns a list of movies.",
                 "produces": [
                     "application/json"
                 ],
@@ -45,6 +45,59 @@ const docTemplate = `{
                     "Movies"
                 ],
                 "summary": "List movies",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Title filter",
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "Genre filters",
+                        "name": "genres",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 10000000,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Page size",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "id",
+                            "title",
+                            "year",
+                            "runtime",
+                            "-id",
+                            "-title",
+                            "-year",
+                            "-runtime"
+                        ],
+                        "type": "string",
+                        "default": "id",
+                        "description": "Sort order",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

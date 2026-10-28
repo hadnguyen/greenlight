@@ -1,0 +1,27 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/api ./cmd/api"
+entrypoint = ["./tmp/api"]
+
+include_ext = ["go"]
+exclude_dir = ["tmp", ".git", "vendor"]
+exclude_regex = ["_test\\.go"]
+exclude_unchanged = true
+
+delay = 500
+stop_on_error = true
+
+[color]
+main = "magenta"
+watcher = "cyan"
+build = "yellow"
+runner = "green"
+
+[log]
+time = true
+main_only = false
+
+[screen]
+clear_on_rebuild = false

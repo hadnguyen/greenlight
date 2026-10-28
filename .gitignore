@@ -9,8 +9,5 @@
 /bin/
 /obj/
 
-# Air/reload tool files
-.air.toml
-
 # Environment files
 .env

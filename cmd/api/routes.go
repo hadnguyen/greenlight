@@ -8,7 +8,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
-func (app *application) routes() *httprouter.Router {
+func (app *application) routes() http.Handler {
 	router := httprouter.New()
 
 	router.NotFound = http.HandlerFunc(app.notFoundResponse)
@@ -26,5 +26,5 @@ func (app *application) routes() *httprouter.Router {
 		httpSwagger.URL("/swagger/doc.json"),
 	))
 
-	return router
+	return app.recoverPanic(app.rateLimit(router))
 }

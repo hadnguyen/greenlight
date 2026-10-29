@@ -360,6 +360,73 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users": {
+            "post": {
+                "description": "Creates an inactive user. Name must be at most 500 bytes; password must be between 8 and 72 bytes. Duplicate email addresses return a validation error.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Register a user",
+                "parameters": [
+                    {
+                        "description": "User registration details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.registerUserInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "user": {
+                                    "$ref": "#/definitions/data.User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -387,6 +454,26 @@ const docTemplate = `{
                 },
                 "year": {
                     "type": "integer"
+                }
+            }
+        },
+        "data.User": {
+            "type": "object",
+            "properties": {
+                "activated": {
+                    "type": "boolean"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },
@@ -447,6 +534,29 @@ const docTemplate = `{
                 "year": {
                     "type": "integer",
                     "example": 1985
+                }
+            }
+        },
+        "main.registerUserInput": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "jane@example.com"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Jane Doe"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "example-password"
                 }
             }
         }

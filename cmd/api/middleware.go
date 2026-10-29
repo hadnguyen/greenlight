@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -50,6 +51,11 @@ func (app *application) rateLimit(next http.Handler) http.Handler {
 	}()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/swagger/") {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		if app.config.limiter.enabled {
 			ip, _, err := net.SplitHostPort(r.RemoteAddr)
 			if err != nil {

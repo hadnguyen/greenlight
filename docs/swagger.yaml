@@ -18,6 +18,19 @@ definitions:
       year:
         type: integer
     type: object
+  data.User:
+    properties:
+      activated:
+        type: boolean
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   main.movieCreateInput:
     properties:
       genres:
@@ -60,6 +73,23 @@ definitions:
       year:
         example: 1985
         type: integer
+    type: object
+  main.registerUserInput:
+    properties:
+      email:
+        example: jane@example.com
+        format: email
+        type: string
+      name:
+        example: Jane Doe
+        type: string
+      password:
+        example: example-password
+        type: string
+    required:
+    - email
+    - name
+    - password
     type: object
 info:
   contact: {}
@@ -304,4 +334,51 @@ paths:
       summary: Update a movie
       tags:
       - Movies
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Creates an inactive user. Name must be at most 500 bytes; password
+        must be between 8 and 72 bytes. Duplicate email addresses return a validation
+        error.
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/main.registerUserInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            properties:
+              user:
+                $ref: '#/definitions/data.User'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            additionalProperties: true
+            type: object
+        "429":
+          description: Too Many Requests
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register a user
+      tags:
+      - Users
 swagger: "2.0"
